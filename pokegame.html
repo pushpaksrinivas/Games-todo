@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokemon Battle Arena</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Trebuchet MS',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    color:white;
+    text-align:center;
+
+    background:
+    linear-gradient(
+        to bottom,
+        #5cc8ff 0%,
+        #87ceeb 40%,
+        #66bb6a 40%,
+        #2e7d32 100%
+    );
+}
+
+/* SUN */
+
+.sun{
+    position:fixed;
+    top:50px;
+    right:80px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:#ffe082;
+    box-shadow:0 0 100px #ffeb3b;
+    z-index:-2;
+}
+
+/* CLOUDS */
+
+.cloud{
+    position:fixed;
+    background:white;
+    border-radius:50px;
+    opacity:.6;
+    z-index:-1;
+}
+
+.cloud::before,
+.cloud::after{
+    content:"";
+    position:absolute;
+    background:white;
+    border-radius:50%;
+}
+
+.cloud1{
+    width:180px;
+    height:60px;
+    top:80px;
+    left:-200px;
+    animation:cloudMove 60s linear infinite;
+}
+
+.cloud1::before{
+    width:80px;
+    height:80px;
+    left:20px;
+    top:-30px;
+}
+
+.cloud1::after{
+    width:100px;
+    height:100px;
+    right:20px;
+    top:-40px;
+}
+
+.cloud2{
+    width:220px;
+    height:70px;
+    top:180px;
+    left:-300px;
+    animation:cloudMove 80s linear infinite;
+}
+
+.cloud2::before{
+    width:90px;
+    height:90px;
+    left:30px;
+    top:-35px;
+}
+
+.cloud2::after{
+    width:110px;
+    height:110px;
+    right:30px;
+    top:-45px;
+}
+
+@keyframes cloudMove{
+    from{
+        transform:translateX(0);
+    }
+    to{
+        transform:translateX(1800px);
+    }
+}
+
+/* FLOATING POKEBALLS */
+
+.bg-ball{
+    position:fixed;
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    background:
+    linear-gradient(red 50%,white 50%);
+    opacity:.12;
+    z-index:-1;
+}
+
+.b1{left:10%;animation:floatBall 14s linear infinite;}
+.b2{left:30%;animation:floatBall 18s linear infinite;}
+.b3{left:60%;animation:floatBall 12s linear infinite;}
+.b4{left:80%;animation:floatBall 16s linear infinite;}
+
+@keyframes floatBall{
+    from{
+        transform:translateY(100vh);
+    }
+    to{
+        transform:translateY(-200px) rotate(720deg);
+    }
+}
+
+/* BUTTON */
+
+#startBtn{
+    position:fixed;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%);
+
+    border:none;
+    background:none;
+    color:white;
+    font-size:26px;
+    font-weight:bold;
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:15px;
+
+    z-index:100;
+}
+
+/* POKEBALL */
+
+.pokeball{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:
+    linear-gradient(red 50%,white 50%);
+    border:5px solid #222;
+    position:relative;
+}
+
+.pokeball::before{
+    content:"";
+    position:absolute;
+    left: 0;
+    width:100%;
+    height:6px;
+    background:#222;
+    top:50%;
+}
+
+.pokeball::after{
+    content:"";
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:white;
+    border:5px solid #222;
+
+    position:absolute;
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+}
+
+.spin{
+    animation:spin 1.5s linear;
+}
+
+.shake{
+    animation:shake .8s ease;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(720deg);}
+}
+
+@keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-15px);}
+    40%{transform:translateX(15px);}
+    60%{transform:translateX(-10px);}
+    80%{transform:translateX(10px);}
+}
+
+/* FLASH */
+
+#flash{
+    position:fixed;
+    inset:0;
+    background:white;
+    opacity:0;
+    pointer-events:none;
+}
+
+.battleFlash{
+    animation:flash .5s ease;
+}
+
+@keyframes flash{
+    0%{opacity:0;}
+    50%{opacity:1;}
+    100%{opacity:0;}
+}
+
+/* BATTLEFIELD */
+
+.battlefield{
+    margin-top:40px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:80px;
+    flex-wrap:wrap;
+}
+
+.pokemon-card{
+    width:280px;
+    padding:20px;
+
+    opacity:0;
+
+    border-radius:25px;
+    backdrop-filter:blur(10px);
+
+    background:rgba(255,255,255,.15);
+
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.3);
+}
+
+.slide-left{
+    animation:slideLeft 1s forwards;
+}
+
+.slide-right{
+    animation:slideRight 1s forwards;
+}
+
+@keyframes slideLeft{
+    from{
+        opacity:0;
+        transform:translateX(-500px);
+    }
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+@keyframes slideRight{
+    from{
+        opacity:0;
+        transform:translateX(500px);
+    }
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+}
+
+.pokemon-card img{
+    width:180px;
+    height:180px;
+}
+
+h4{
+    margin-top:10px;
+    font-size:24px;
+    text-transform:capitalize;
+}
+
+h3{
+    margin-top:10px;
+    color:#ffeb3b;
+}
+
+/* VS */
+
+.vs{
+    font-size:90px;
+    color:gold;
+    font-weight:bold;
+}
+
+.vsBurst{
+    animation:vsBurst .8s ease;
+}
+
+@keyframes vsBurst{
+    0%{
+        opacity:0;
+        transform:scale(0);
+    }
+
+    70%{
+        transform:scale(1.6);
+    }
+
+    100%{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+/* ATTACK */
+
+.attack-left{
+    animation:attackLeft .8s;
+}
+
+.attack-right{
+    animation:attackRight .8s;
+}
+
+@keyframes attackLeft{
+    50%{
+        transform:translateX(100px) scale(1.1);
+    }
+}
+
+@keyframes attackRight{
+    50%{
+        transform:translateX(-100px) scale(1.1);
+    }
+}
+
+/* LOSER */
+
+.defeated{
+    animation:defeated 1s forwards;
+}
+
+@keyframes defeated{
+    20%,40%,60%,80%{
+        transform:translateX(20px);
+    }
+
+    30%,50%,70%,90%{
+        transform:translateX(-20px);
+    }
+
+    100%{
+        opacity:.2;
+        transform:rotate(-20deg);
+    }
+}
+
+/* WINNER */
+
+.champion{
+    animation:aura 2s infinite;
+}
+
+@keyframes aura{
+    50%{
+        box-shadow:
+        0 0 20px gold,
+        0 0 50px orange;
+    }
+}
+
+/* RESULT */
+
+#won{
+    margin-top:30px;
+    font-size:40px;
+    color:gold;
+}
+
+/* WINNER CARD */
+
+.winner-card{
+    display:none;
+
+    width:350px;
+    margin:40px auto;
+    padding:25px;
+
+    border-radius:30px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #ffd700,
+        #ff9800
+    );
+
+    color:#222;
+
+    box-shadow:
+    0 0 40px gold;
+}
+
+.showWinner{
+    display:block;
+    animation:dropWinner 1s ease;
+}
+
+@keyframes dropWinner{
+    0%{
+        opacity:0;
+        transform:
+        translateY(-600px)
+        rotate(-20deg);
+    }
+
+    70%{
+        transform:
+        translateY(30px)
+        rotate(5deg);
+    }
+
+    100%{
+        opacity:1;
+        transform:
+        translateY(0)
+        rotate(0);
+    }
+}
+
+.winner-card img{
+    width:220px;
+    height:220px;
+}
+
+/* CONFETTI */
+
+.confetti{
+    position:fixed;
+    width:12px;
+    height:12px;
+    top:-20px;
+    animation:fall 4s linear forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:
+        translateY(110vh)
+        rotate(720deg);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="sun"></div>
+
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+
+<div class="bg-ball b1"></div>
+<div class="bg-ball b2"></div>
+<div class="bg-ball b3"></div>
+<div class="bg-ball b4"></div>
+
+<div id="flash"></div>
+
+<div class="battlefield">
+
+    <div class="pokemon-card" id="card1">
+        <img id="pokiimg1">
+        <h4 id="name1"></h4>
+        <h3 id="power1"></h3>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="pokemon-card" id="card2">
+        <img id="pokiimg2">
+        <h4 id="name2"></h4>
+        <h3 id="power2"></h3>
+    </div>
+
+</div>
+
+<h1 id="won"></h1>
+
+<div class="winner-card" id="winnerCard">
+    <img id="winnerImg">
+    <h2 id="winnerName"></h2>
+    <p>🏆 Pokemon League Champion</p>
+</div>
+
+<button id="startBtn" onclick="pokidata()">
+    <div class="pokeball"></div>
+    Start Battle
+</button>
+
+<script>
+
+function sleep(ms){
+    return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+function createConfetti(){
+
+    for(let i=0;i<40;i++){
+
+        const confetti=document.createElement("div");
+
+        confetti.classList.add("confetti");
+
+        confetti.style.left=Math.random()*100+"vw";
+
+        confetti.style.background=
+        `hsl(${Math.random()*360},100%,50%)`;
+
+        confetti.style.animationDuration=
+        2+Math.random()*3+"s";
+
+        document.body.appendChild(confetti);
+
+        setTimeout(()=>{
+            confetti.remove();
+        },5000);
+    }
+}
+
+async function pokidata(){
+
+    const ball=document.querySelector(".pokeball");
+    const flash=document.getElementById("flash");
+
+    const card1=document.getElementById("card1");
+    const card2=document.getElementById("card2");
+
+    const winnerCard=document.getElementById("winnerCard");
+
+    winnerCard.className="winner-card";
+
+    document.getElementById("won").textContent="";
+
+    card1.className="pokemon-card";
+    card2.className="pokemon-card";
+
+    ball.classList.add("spin");
+
+    await sleep(1500);
+
+    ball.classList.remove("spin");
+    ball.classList.add("shake");
+
+    await sleep(800);
+
+    ball.classList.remove("shake");
+
+    flash.classList.add("battleFlash");
+
+    await sleep(400);
+
+    flash.classList.remove("battleFlash");
+
+    const id1=Math.floor(Math.random()*1025)+1;
+    const id2=Math.floor(Math.random()*1025)+1;
+
+    const res1=await fetch(`https://pokeapi.co/api/v2/pokemon/${id1}`);
+    const res2=await fetch(`https://pokeapi.co/api/v2/pokemon/${id2}`);
+
+    const p1=await res1.json();
+    const p2=await res2.json();
+
+    document.getElementById("pokiimg1").src=p1.sprites.front_default;
+    document.getElementById("pokiimg2").src=p2.sprites.front_default;
+
+    document.getElementById("name1").textContent=p1.name;
+    document.getElementById("name2").textContent=p2.name;
+
+    document.getElementById("power1").textContent=
+    "Power: " + p1.base_experience;
+
+    document.getElementById("power2").textContent=
+    "Power: " + p2.base_experience;
+
+    card1.classList.add("slide-left");
+    card2.classList.add("slide-right");
+
+    document.querySelector(".vs")
+    .classList.add("vsBurst");
+
+    await sleep(1500);
+
+    let winner, loser;
+    let winnerCardEl, loserCardEl;
+
+    if(p1.base_experience >= p2.base_experience){
+        winner=p1;
+        loser=p2;
+        winnerCardEl=card1;
+        loserCardEl=card2;
+    }else{
+        winner=p2;
+        loser=p1;
+        winnerCardEl=card2;
+        loserCardEl=card1;
+    }
+
+    if(winnerCardEl===card1){
+        card1.classList.add("attack-left");
+    }else{
+        card2.classList.add("attack-right");
+    }
+
+    await sleep(800);
+
+    loserCardEl.classList.add("defeated");
+    winnerCardEl.classList.add("champion");
+
+    document.getElementById("won").textContent =
+    "🏆 " + winner.name.toUpperCase() + " WINS!";
+
+    await sleep(1200);
+
+    createConfetti();
+
+    document.getElementById("winnerImg").src =
+    winner.sprites.other["official-artwork"].front_default;
+
+    document.getElementById("winnerName").textContent =
+    winner.name.toUpperCase();
+
+    winnerCard.classList.add("showWinner");
+}
+
+</script>
+
+</body>
+</html>
